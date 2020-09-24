@@ -12,10 +12,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r include=FALSE}
 require(tidyverse)
 require(tigerstats)
+require(knitr)
 davisdata <- read.csv(file="UCDavis.csv")
 ```
 ## Our Goal is to answer this question Is there a difference between the alcohol consumed between the row
 ## you choose to sit in??
+
+$H_0$: There is no difference between the alcohol consumption and the row you choose to sit in.  
+$H_A$: There is a difference between the alcohol consumption and the row you choose to sit in. 
 
 ## Now with ggplot - first select the basic data
 
@@ -35,10 +39,24 @@ basicCN + geom_boxplot()
 basicCN + geom_boxplot(notch=TRUE,outlier.color = "red") + stat_boxplot(geom ='errorbar') + labs(title="Fancy notch boxplot \n with 2 lines")
 ```
 
-## Numerical Summarys 
+## Numerical Summaries
+```{r}
+favstats(alcohol~Seat,data=davisdata)
+```
+
 
 ## Inferential Tests
+```{r}
+model1 <- aov(alcohol~Seat,data=davisdata)
+summary.aov(model1)
+```
+```{r}
+#we specify the margins starting at the bottom and proceeding clockwise - thus 8.7 is the left side margin to hold the names of the factors
+par(mar = c(3, 8.7, 2, 2))
+plot(TukeyHSD(model1),las=2)
+```
 
 ## Conclusions
-
-
+The inferential tests result with a P value of 0.000116 which is less than 0.05, therefore we reject the null hypothesis and conclude that there is difference in the amount of alcohol you consume and the row you choose to sit in. 
+This can also be determined in the 95% family-wise confidence level graph above which contains confidence intervals for the difference in the means for all three options of where you can sit. For example, we can see that there is a bigger difference between the middle-front and front-back than there is to middle-front and mid-back.  
+This makes us reject the null hypothesis and agree with the alternate hypothesis which states that there is a difference between the amount of alcohol you consume and the row you choose to sit in. 
